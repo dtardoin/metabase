@@ -52,8 +52,8 @@ RUN keytool -noprompt -import -trustcacerts -alias aws-rds \
 # ###################
 # # STAGE 2: runner
 # ###################
-
-FROM openjdk:8-jre-alpine as runner
+#Because of a bug in jenkins docker-workflow-plugin we have to do this in one image
+#FROM openjdk:8-jre-alpine as runner
 
 WORKDIR /app
 
@@ -64,12 +64,15 @@ ENV LC_CTYPE en_US.UTF-8
 RUN apk add --update bash ttf-dejavu fontconfig
 
 # add fixed cacerts
-COPY --from=builder /etc/ssl/certs/java/cacerts /usr/lib/jvm/default-jvm/jre/lib/security/cacerts
+#COPY --from=builder /etc/ssl/certs/java/cacerts /usr/lib/jvm/default-jvm/jre/lib/security/cacerts
+RUN cp /etc/ssl/certs/java/cacerts /usr/lib/jvm/default-jvm/jre/lib/security/cacerts
 
 # add Metabase script and uberjar
 RUN mkdir -p bin target/uberjar
-COPY --from=builder /app/source/target/uberjar/metabase.jar /app/target/uberjar/
-COPY --from=builder /app/source/bin/start /app/bin/
+#COPY --from=builder /app/source/target/uberjar/metabase.jar /app/target/uberjar/
+RUN cp /app/source/target/uberjar/metabase.jar /app/target/uberjar/
+#COPY --from=builder /app/source/bin/start /app/bin/
+RUN cp /app/source/bin/start /app/bin/
 
 # create the plugins directory, with writable permissions
 RUN mkdir -p /plugins
