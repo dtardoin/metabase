@@ -1,5 +1,8 @@
 ## In-depth Guides
 
+#### [Troubleshooting Guide](troubleshooting-guide/index.md)
+Have a problem and need help? Start with our troubleshooting guide.
+
 #### [Users Guide](users-guide/start.md)
 This is the go-to guide on asking questions and sharing answers using Metabase. You'll learn in depth about how questions are expressed, how to chart answers, as well as how to share questions and create dashboards.
 
@@ -8,6 +11,12 @@ This guide is for advanced users and those who will be setting up and maintainin
 
 #### [Operations Guide](operations-guide/start.md)
 This guide contains more detailed information about how to install Metabase for production use. It covers topics like SSL termination, deploying via Docker Containers vs. Jars, as well as the tradeoffs involved.
+
+
+## Enterprise Edition
+
+#### [Enterprise Features Guide](./enterprise-guide/start.md)
+Here’s where to go for help using the features included in the Enterprise Edition of Metabase.
 
 
 ## For Developers

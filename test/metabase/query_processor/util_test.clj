@@ -9,15 +9,15 @@
 (expect true  (qputil/mbql-query? {:type "query"}))
 
 ;; query-without-aggregations-or-limits?
-(expect false (qputil/query-without-aggregations-or-limits? {:query {:aggregation [{:aggregation-type :count}]}}))
-(expect true  (qputil/query-without-aggregations-or-limits? {:query {:aggregation [{:aggregation-type :rows}]}}))
-(expect false (qputil/query-without-aggregations-or-limits? {:query {:aggregation [{:aggregation-type :count}]
+(expect false (qputil/query-without-aggregations-or-limits? {:query {:aggregation [[:count]]}}))
+(expect true  (qputil/query-without-aggregations-or-limits? {:query {}}))
+(expect false (qputil/query-without-aggregations-or-limits? {:query {:aggregation [[:count]]
                                                                      :limit       10}}))
-(expect false (qputil/query-without-aggregations-or-limits? {:query {:aggregation [{:aggregation-type :count}]
+(expect false (qputil/query-without-aggregations-or-limits? {:query {:aggregation [[:count]]
                                                                      :page        1}}))
 
 
-;;; ------------------------------------------------------------ Tests for qputil/query-hash ------------------------------------------------------------
+;;; ------------------------------------------ Tests for qputil/query-hash -------------------------------------------
 
 (defn- array= {:style/indent 0}
   ([a b]
@@ -88,7 +88,8 @@
     (qputil/query-hash {:query :abc})
     (qputil/query-hash {:query :abc, :parameters ["ABC"]})))
 
-;; similarly, the presence of a `nil` value for `:constraints` should produce the same hash as not including the key at all
+;; similarly, the presence of a `nil` value for `:constraints` should produce the same hash as not including the key
+;; at all
 (expect
   (array=
     (qputil/query-hash {:query :abc})
@@ -105,3 +106,33 @@
     (qputil/query-hash {:database    2
                         :type        "native"
                         :native      {:query "SELECT pg_sleep(15), 2 AS two"}})))
+
+
+(def ^:private test-inner-map
+  {:test {:value 10}})
+
+;; get-in-query should work for a nested query
+(expect
+  10
+  (qputil/get-in-query {:query {:source-query test-inner-map}} [:test :value]))
+
+;; Not currently supported, but get-in-query should work for a double nested query
+(expect
+  10
+  (qputil/get-in-query {:query {:source-query {:source-query test-inner-map}}} [:test :value]))
+
+;; get-in-query should also work with non-nested queries
+(expect
+  10
+  (qputil/get-in-query {:query test-inner-map} [:test :value]))
+
+;; Not providing a `not-found` value should just return nil
+(expect
+  nil
+  (qputil/get-in-query {} [:test]))
+
+;; Providing a `not-found` value should return that
+(let [not-found (gensym)]
+  (expect
+    not-found
+    (qputil/get-in-query {} [:test] not-found)))
