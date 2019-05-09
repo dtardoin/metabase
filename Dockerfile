@@ -2,7 +2,8 @@
 # STAGE 1: builder
 ###################
 
-FROM openjdk:8-jdk-alpine as builder
+#FROM openjdk:8-jdk-alpine as builder
+FROM openjdk:8-jdk-alpine 
 
 WORKDIR /app/source
 
